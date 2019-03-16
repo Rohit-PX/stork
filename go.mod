@@ -98,3 +98,5 @@ require (
 	k8s.io/utils v0.0.0-20190129030815-ed37f7428a91 // indirect
 	vbom.ml/util v0.0.0-20180919145318-efcd4e0f9787 // indirect
 )
+
+replace github.com/kubernetes-incubator/external-storage => github.com/libopenstorage/external-storage v5.1.0-openstorage+incompatible
