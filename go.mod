@@ -58,7 +58,7 @@ require (
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/portworx/kvdb v0.0.0-20190125001559-1c18ebeaf685 // indirect
-	github.com/portworx/sched-ops v0.0.0-20190217184239-10d259768eb3
+	github.com/portworx/sched-ops v0.0.0-20190313212943-47c0646da0c8
 	github.com/portworx/talisman v0.0.0-20190123213422-84374e26f35d // indirect
 	github.com/portworx/torpedo v0.0.0-20190314235344-0e9d7455335c
 	github.com/prometheus/client_golang v0.9.2 // indirect
