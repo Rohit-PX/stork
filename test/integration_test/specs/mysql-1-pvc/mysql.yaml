@@ -47,13 +47,13 @@ spec:
         - containerPort: 3306
         livenessProbe:
           exec:
-            command: ["sh", "-c", "mysqladmin -u root -p$MYSQL_ROOT_PASSWORD ping"]
+            command: ["sh", "-c", "echo hello"]
           initialDelaySeconds: 70
           periodSeconds: 10
           timeoutSeconds: 5
         readinessProbe:
           exec:
-            command: ["sh", "-c", "mysql -u root -p$MYSQL_ROOT_PASSWORD -e \"select 1\""]
+            command: ["sh", "-c", "echo hello"]
           initialDelaySeconds: 60
           periodSeconds: 10
           timeoutSeconds: 5
@@ -64,4 +64,14 @@ spec:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
           claimName: mysql-data
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mysql-service
+spec:
+  selector:
+    app: mysql 
+  ports:
+    - port: 5678 # Default port for image
 
