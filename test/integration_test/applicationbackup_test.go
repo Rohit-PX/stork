@@ -950,9 +950,6 @@ func applicationBackupSyncControllerTest(t *testing.T) {
 	err = k8s.Instance().DeleteBackupLocation(backupLocationName, ns.Name)
 	require.NoError(t, err, "Failed to delete  backup location %s on first cluster: %v.", ns.Name, err)
 
-	err = deleteAndWaitForBackupDeletion(ns.Name)
-	require.NoError(t, err, "All backups not delete backup: %v.", err)
-
 	destroyAndWait(t, []*scheduler.Context{appCtx})
 
 	err = dumpRemoteKubeConfig(remoteConfig)
