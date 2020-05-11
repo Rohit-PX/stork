@@ -173,7 +173,7 @@ func destroyAndWait(t *testing.T, ctxs []*scheduler.Context) {
 	for _, ctx := range ctxs {
 		err := schedulerDriver.WaitForDestroy(ctx, defaultWaitTimeout)
 		require.NoError(t, err, "Error waiting for destroy of ctx: %+v", ctx)
-		_, err = schedulerDriver.DeleteVolumes(ctx)
+		_, err = schedulerDriver.DeleteVolumes(ctx, nil)
 		require.NoError(t, err, "Error deleting volumes in ctx: %+v", ctx)
 	}
 }
@@ -541,6 +541,27 @@ func createApp(t *testing.T, testID string) *scheduler.Context {
 
 	verifyScheduledNode(t, scheduledNodes[0], volumeNames)
 	return ctxs[0]
+}
+
+func createIngressController(t *testing.T, testID string) *scheduler.Context {
+
+	ctxs, err := schedulerDriver.Schedule(testID,
+		scheduler.ScheduleOptions{AppKeys: []string{"ingress"}, Scheduler: schedulerName})
+	require.NoError(t, err, "Error scheduling task")
+
+	err = schedulerDriver.WaitForRunning(ctxs[0], defaultWaitTimeout, defaultWaitInterval)
+	require.NoError(t, err, "Error waiting for pod to get to running state")
+
+	return ctxs[0]
+}
+
+func TestIntegration(t *testing.T) {
+	t.Run("createIngressControllerTest", createIngressControllerTest)
+}
+
+func createIngressControllerTest(
+	t *testing.T) {
+	_ = createIngressController(t, "nginx")
 }
 
 func TestMain(m *testing.M) {

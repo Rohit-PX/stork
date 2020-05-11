@@ -78,6 +78,7 @@ func triggerBackupRestoreTest(
 		var currBackupLocation *storkv1.BackupLocation
 		var err error
 		var ctxs []*scheduler.Context
+		_ = createIngressController(t, "nginx")
 		ctx := createApp(t, appKey)
 		ctxs = append(ctxs, ctx)
 		var restoreCtx = &scheduler.Context{

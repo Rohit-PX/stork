@@ -5,6 +5,7 @@ import (
 	"time"
 
 	apapi "github.com/libopenstorage/autopilot-api/pkg/apis/autopilot/v1alpha1"
+	"github.com/portworx/torpedo/drivers/api"
 	"github.com/portworx/torpedo/drivers/node"
 	"github.com/portworx/torpedo/drivers/scheduler/spec"
 	"github.com/portworx/torpedo/drivers/volume"
@@ -124,14 +125,17 @@ type Driver interface {
 	// DeleteTasks deletes all tasks of the application (not the application). DeleteTasksOptions is optional.
 	DeleteTasks(*Context, *DeleteTasksOptions) error
 
+	// GetVolumeDriverVolumeName returns name of volume which is refered by volume driver
+	GetVolumeDriverVolumeName(name string, namespace string) (string, error)
+
 	// GetVolumeParameters Returns a maps, each item being a volume and it's options
 	GetVolumeParameters(*Context) (map[string]map[string]string, error)
 
 	// ValidateVolumes validates storage volumes in the provided context
-	ValidateVolumes(cc *Context, timeout, retryInterval time.Duration) error
+	ValidateVolumes(cc *Context, timeout, retryInterval time.Duration, options *VolumeOptions) error
 
 	// DeleteVolumes will delete all storage volumes for the given context
-	DeleteVolumes(*Context) ([]*volume.Volume, error)
+	DeleteVolumes(*Context, *VolumeOptions) ([]*volume.Volume, error)
 
 	// GetVolumes returns all storage volumes for the given context
 	GetVolumes(*Context) ([]*volume.Volume, error)
@@ -208,6 +212,9 @@ type Driver interface {
 
 	// GetWorkloadSizeFromAppSpec gets workload size from an application spec
 	GetWorkloadSizeFromAppSpec(ctx *Context) (uint64, error)
+
+	// SetConfig sets connnection config (e.g. kubeconfig in case of k8s) for scheduler driver
+	SetConfig(configPath string) error
 }
 
 var (
@@ -216,7 +223,13 @@ var (
 
 // DeleteTasksOptions are options supplied to the DeleteTasks API
 type DeleteTasksOptions struct {
-	TriggerOptions
+	api.TriggerOptions
+}
+
+// VolumeOptions are options supplied to the scheduler Volume APIs
+type VolumeOptions struct {
+	// SkipClusterScopedObjects skips volume operations on cluster scoped objects like storage class
+	SkipClusterScopedObjects bool
 }
 
 // Event collects kubernetes events data for further validation
@@ -228,20 +241,6 @@ type Event struct {
 	Kind      string
 	Type      string
 }
-
-// TriggerOptions are common options used to check if any action is okay to be triggered/performed
-type TriggerOptions struct {
-	// TriggerCb is the callback function to invoke to check trigger condition
-	TriggerCb TriggerCallbackFunc
-	// TriggerCheckInterval is the interval at which to check the trigger conditions
-	TriggerCheckInterval time.Duration
-	// TriggerCheckTimeout is the duration at which the trigger checks should timeout. If the trigger
-	TriggerCheckTimeout time.Duration
-}
-
-// TriggerCallbackFunc is a callback function that are used by scheduler APIs to decide when to trigger/perform actions.
-// the function should return true, when it is the right time to perform the respective action
-type TriggerCallbackFunc func() (bool, error)
 
 // Register registers the given scheduler driver
 func Register(name string, d Driver) error {
