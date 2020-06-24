@@ -20,6 +20,7 @@ import (
 	apapi "github.com/libopenstorage/autopilot-api/pkg/apis/autopilot/v1alpha1"
 	"github.com/libopenstorage/openstorage/pkg/units"
 	storkapi "github.com/libopenstorage/stork/pkg/apis/stork/v1alpha1"
+	"github.com/libopenstorage/stork/pkg/objectstore"
 	"github.com/portworx/sched-ops/k8s/apps"
 	"github.com/portworx/sched-ops/k8s/autopilot"
 	"github.com/portworx/sched-ops/k8s/batch"
@@ -3439,6 +3440,19 @@ func (k *K8s) UpdateAutopilotRule(apRule apapi.AutopilotRule) (*apapi.AutopilotR
 // ListAutopilotRules lists AutopilotRules
 func (k *K8s) ListAutopilotRules() (*apapi.AutopilotRuleList, error) {
 	return k8sAutopilot.ListAutopilotRules()
+}
+
+// ValidateBackupsDeletedFromCloud validates that bucket has been deleted from the cloud
+func (k *K8s) ValidateBackupsDeletedFromCloud(ctx *scheduler.Context) error {
+	for _, specObj := range ctx.App.SpecList {
+		if obj, ok := specObj.(*storkapi.BackupLocation); ok {
+			bucket, err := objectstore.GetBucket(obj)
+			if err == nil || bucket != nil {
+				return fmt.Errorf("Bucket %v still present", bucket)
+			}
+		}
+	}
+	return nil
 }
 
 // Update pvc with appropriate storage class

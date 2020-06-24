@@ -175,6 +175,9 @@ func triggerBackupRestoreTest(
 		}
 		err = storkops.Instance().DeleteBackupLocation(currBackupLocation.Name, currBackupLocation.Namespace)
 		require.NoError(t, err, "Failed to delete backuplocation: %s for location %s.", currBackupLocation.Name, string(location), err)
+
+		err = schedulerDriver.ValidateBackupsDeletedFromCloud(ctxs[0])
+		require.NoError(t, err, "Error deleting backuplocation %v", currBackupLocation)
 	}
 }
 

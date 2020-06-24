@@ -214,6 +214,9 @@ type Driver interface {
 
 	// SetConfig sets connnection config (e.g. kubeconfig in case of k8s) for scheduler driver
 	SetConfig(configPath string) error
+
+	// ValidateBackupsDeletedFromCloud validates that bucket has been deleted from the cloud
+	ValidateBackupsDeletedFromCloud(ctx *Context) error
 }
 
 var (
