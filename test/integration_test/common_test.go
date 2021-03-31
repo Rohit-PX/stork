@@ -71,6 +71,8 @@ const (
 	configMapSyncWaitTime = 3 * time.Second
 	defaultSchedulerName  = "default-scheduler"
 	bucketPrefix          = "stork-test"
+	storkDeploymentName   = "stork"
+	storkPodLabel         = "stork"
 
 	// TODO: Figure out a way to communicate with PX nodes from other cluster
 	nodeScore   = 100
